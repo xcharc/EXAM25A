@@ -1,0 +1,161 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAmqv-B4NdLM4BRB2FfKyt8f4cyD8CYI9Y",
+  authDomain: "exam-5ae24.firebaseapp.com",
+  projectId: "exam-5ae24",
+  storageBucket: "exam-5ae24.appspot.com",
+  messagingSenderId: "386277703487",
+  appId: "1:386277703487:web:768c2e0576b65e52cf5d8a",
+  measurementId: "G-8H6BCYPZPH"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+
+
+// formulario de inicio de sesión
+const loginForm = document.querySelector('#loginForm');
+
+loginForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const email = document.querySelector('#email').value;
+  const password = document.querySelector('#password').value;
+
+  // Iniciar sesión con Firebase
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      
+      const user = userCredential.user;
+      console.log('Usuario ha iniciado sesión:', user);
+      
+    })
+    .catch((error) => {
+      
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error('Error al iniciar sesión:', errorMessage);
+      
+    });
+});
+
+
+// AUTTOTICATION
+import React, { useState } from 'react';
+import { View, TextInput, Button, Text } from 'react-native';
+import { auth } from './firebaseConfig';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+
+export default function App() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState('');
+
+  const handleSignUp = () => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(userCredential => {
+        setUser(userCredential.user);
+      })
+      .catch(error => setError(error.message));
+  };
+
+  const handleSignIn = () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then(userCredential => {
+        setUser(userCredential.user);
+      })
+      .catch(error => setError(error.message));
+  };
+
+  return (
+    <View style={{ padding: 20 }}>
+      <TextInput
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        style={{ marginBottom: 10, padding: 8, borderWidth: 1, borderColor: '#ccc' }}
+      />
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={{ marginBottom: 10, padding: 8, borderWidth: 1, borderColor: '#ccc' }}
+      />
+      <Button title="Sign Up" onPress={handleSignUp} />
+      <Button title="Sign In" onPress={handleSignIn} />
+
+      {user && <Text>Welcome, {user.email}</Text>}
+      {error && <Text style={{ color: 'red' }}>{error}</Text>}
+    </View>
+  );
+}
+
+// SignUP 
+import React, { useState } from 'react';
+import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
+import { auth } from './firebaseConfig';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+
+export default function SignUp() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSignUp = () => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(userCredential => {
+        console.log('User registered: ', userCredential.user);
+      })
+      .catch(error => setError(error.message));
+  };
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={styles.input}
+      />
+      <Button title="Sign Up" onPress={handleSignUp} />
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 16,
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 12,
+    paddingHorizontal: 8,
+  },
+  error: {
+    color: 'red',
+    marginTop: 8,
+  },
+});
+
